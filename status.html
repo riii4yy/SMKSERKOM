@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<meta http-equiv="refresh" content="$(refresh-timeout-1)">
+<title>Hotspot Riii4yy - Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#5c1a2b;
+    --wine-deep:#3d0f1c;
+    --gold:#c9a24b;
+    --gold-light:#e6c877;
+    --ivory:#f6efe2;
+    --parchment:#efe4cf;
+    --ink:#2c1810;
+    --error:#8a2e2e;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ color-scheme: light; }
+
+  html,body{
+    height:100%;
+    font-family:'Cormorant Garamond', serif;
+    color:var(--ink);
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(ellipse at top left, rgba(230,200,119,0.10), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(230,200,119,0.08), transparent 55%),
+      linear-gradient(160deg, var(--wine-deep) 0%, var(--wine) 55%, var(--wine-deep) 100%);
+    overflow-x:hidden;
+  }
+
+  .bg-signal{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    opacity:0.06;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:min(900px, 140vw);
+    pointer-events:none;
+  }
+
+  .card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:400px;
+    background:linear-gradient(180deg, var(--ivory), var(--parchment));
+    border:1px solid var(--gold);
+    border-radius:6px;
+    box-shadow:
+      0 0 0 1px rgba(201,162,75,0.35),
+      0 30px 60px rgba(0,0,0,0.45);
+    padding:38px 34px 30px;
+    text-align:center;
+  }
+
+  .check-icon{
+    width:52px;
+    height:52px;
+    margin:0 auto 14px;
+    display:block;
+  }
+  .check-icon circle{
+    fill:none;
+    stroke:var(--gold);
+    stroke-width:2.2;
+  }
+  .check-icon path{
+    fill:none;
+    stroke:var(--wine);
+    stroke-width:2.6;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  .brand{
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:24px;
+    letter-spacing:0.5px;
+    color:var(--wine);
+    line-height:1.2;
+  }
+
+  .status-tag{
+    display:inline-block;
+    margin-top:10px;
+    padding:4px 14px;
+    font-size:13px;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    color:var(--ivory);
+    background:linear-gradient(180deg, #b98f3a, var(--wine));
+    border-radius:20px;
+  }
+
+  .divider{
+    width:64px;
+    height:1px;
+    background:var(--gold);
+    margin:18px auto 16px;
+  }
+
+  .info-table{
+    width:100%;
+    text-align:left;
+    font-size:16.5px;
+    border-collapse:collapse;
+  }
+  .info-table tr{
+    border-bottom:1px solid rgba(201,162,75,0.25);
+  }
+  .info-table tr:last-child{ border-bottom:none; }
+  .info-table td{
+    padding:9px 2px;
+  }
+  .info-table td.label{
+    color:#8a7550;
+    font-size:14px;
+    letter-spacing:0.3px;
+    width:42%;
+  }
+  .info-table td.value{
+    color:var(--wine);
+    font-weight:600;
+    text-align:right;
+  }
+
+  .btn-logout{
+    display:block;
+    width:100%;
+    margin-top:24px;
+    padding:12px;
+    font-family:'Playfair Display', serif;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:0.6px;
+    color:var(--ivory);
+    background:linear-gradient(180deg, #b98f3a, var(--wine));
+    border:1px solid var(--gold);
+    border-radius:4px;
+    cursor:pointer;
+    text-decoration:none;
+    transition:filter .2s, transform .1s;
+  }
+  .btn-logout:hover{ filter:brightness(1.08); }
+  .btn-logout:active{ transform:translateY(1px); }
+
+  .welcome-back{
+    margin-top:22px;
+    font-size:15px;
+    color:#8a7550;
+    line-height:1.5;
+  }
+
+  footer{
+    margin-top:22px;
+    font-size:13px;
+    letter-spacing:0.4px;
+    color:#8a7550;
+  }
+  footer span{
+    color:var(--wine);
+    font-weight:600;
+  }
+
+  @media (max-width:420px){
+    .card{ padding:30px 22px 24px; }
+    .brand{ font-size:21px; }
+    .info-table{ font-size:15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-signal" style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><g fill=%22none%22 stroke=%22%23e6c877%22 stroke-width=%222%22 stroke-linecap=%22round%22><path d=%22M30 120 a100 100 0 0 1 140 0%22/><path d=%22M55 140 a65 65 0 0 1 90 0%22/><path d=%22M80 160 a30 30 0 0 1 40 0%22/></g><circle cx=%22100%22 cy=%22178%22 r=%226%22 fill=%22%23e6c877%22/></svg>')"></div>
+
+<div class="card">
+
+  <svg class="check-icon" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27"/>
+    <path d="M20 33 L28 41 L45 23"/>
+  </svg>
+
+  <div class="brand">Hotspot Riii4yy</div>
+  <div class="status-tag">Terhubung</div>
+
+  <div class="divider"></div>
+
+  <table class="info-table">
+    <tr>
+      <td class="label">Username</td>
+      <td class="value">$(username)</td>
+    </tr>
+    <tr>
+      <td class="label">IP Address</td>
+      <td class="value">$(ip)</td>
+    </tr>
+    <tr>
+      <td class="label">Durasi Login</td>
+      <td class="value">$(uptime)</td>
+    </tr>
+    <tr>
+      <td class="label">Data Masuk</td>
+      <td class="value">$(bytes-in-nice)</td>
+    </tr>
+    <tr>
+      <td class="label">Data Keluar</td>
+      <td class="value">$(bytes-out-nice)</td>
+    </tr>
+  </table>
+
+  <a href="$(link-logout)" class="btn-logout">Logout</a>
+
+  <div class="welcome-back">
+    Terima kasih sudah terhubung ke<br>
+    <b style="color:var(--wine)">SMK PGRI BRATI</b>
+  </div>
+
+  <footer>Powered By <span>Ridwan.serkom</span></footer>
+</div>
+
+</body>
+</html>
