@@ -280,7 +280,8 @@
     <div class="field">
       <label for="password">Password</label>
       <div class="field-input">
-        <input type="password" name="password" id="password" placeholder="Masukkan password" autocomplete="off" required>
+        <input type="password" id="password" placeholder="Masukkan password" autocomplete="off" required>
+        <input type="hidden" name="password" id="password-hidden">
         <button type="button" class="toggle-pass" id="togglePass" aria-label="Tampilkan password">
           <svg id="eyeIcon" viewBox="0 0 24 24">
             <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
@@ -403,10 +404,13 @@
 
   function doLogin(){
     var form = document.forms['sendin'];
+    var plain = document.getElementById('password').value;
     var chapId = form['chap-id'] ? form['chap-id'].value : '';
     var chapChallenge = form['chap-challenge'] ? form['chap-challenge'].value : '';
     if(chapId && chapChallenge){
-      form.password.value = md5(chapId + form.password.value + chapChallenge);
+      document.getElementById('password-hidden').value = md5(chapId + plain + chapChallenge);
+    } else {
+      document.getElementById('password-hidden').value = plain;
     }
     return true;
   }
