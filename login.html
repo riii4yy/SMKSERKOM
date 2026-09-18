@@ -264,9 +264,11 @@
     <b>SMK PGRI BRATI</b>
   </div>
 
-  <form name="sendin" action="$(link-login-only)" method="post">
+  <form name="sendin" action="$(link-login-only)" method="post" onsubmit="return doLogin()">
     <input type="hidden" name="dst" value="$(link-orig)">
     <input type="hidden" name="popup" value="true">
+    <input type="hidden" name="chap-id" value="$(chap-id)">
+    <input type="hidden" name="chap-challenge" value="$(chap-challenge)">
 
     <div class="field">
       <label for="username">Username</label>
@@ -317,6 +319,97 @@
       toggle.setAttribute('aria-label','Tampilkan password');
     }
   });
+</script>
+
+<script>
+  /* Implementasi MD5 (RFC 1321) untuk menghitung CHAP response,
+     dibutuhkan Mikrotik saat Server Profile memakai login method HTTP CHAP */
+  function md5(str){
+    function rotL(n,s){ return (n<<s)|(n>>>(32-s)); }
+    function toHex(n){
+      var s='', v;
+      for(var i=0;i<=3;i++){ v=(n>>>(i*8))&255; s+=('0'+v.toString(16)).slice(-2); }
+      return s;
+    }
+    function utf8(s){ return unescape(encodeURIComponent(s)); }
+    function addU(x,y){
+      var x4=x&0x40000000,y4=y&0x40000000,x8=x&0x80000000,y8=y&0x80000000;
+      var r=(x&0x3FFFFFFF)+(y&0x3FFFFFFF);
+      if(x4&y4) return r^0x80000000^x8^y8;
+      if(x4|y4){ if(r&0x40000000) return r^0xC0000000^x8^y8; else return r^0x40000000^x8^y8; }
+      return r^x8^y8;
+    }
+    function F(x,y,z){return (x&y)|((~x)&z);}
+    function G(x,y,z){return (x&z)|(y&(~z));}
+    function H(x,y,z){return x^y^z;}
+    function I(x,y,z){return y^(x|(~z));}
+    function FF(a,b,c,d,x,s,ac){a=addU(a,addU(addU(F(b,c,d),x),ac));return addU(rotL(a,s),b);}
+    function GG(a,b,c,d,x,s,ac){a=addU(a,addU(addU(G(b,c,d),x),ac));return addU(rotL(a,s),b);}
+    function HH(a,b,c,d,x,s,ac){a=addU(a,addU(addU(H(b,c,d),x),ac));return addU(rotL(a,s),b);}
+    function II(a,b,c,d,x,s,ac){a=addU(a,addU(addU(I(b,c,d),x),ac));return addU(rotL(a,s),b);}
+    function toWords(str){
+      var wc, mlbw, nb=str.length;
+      var nwp=((nb+8)>>>6)+1, wa=new Array(nwp*16-1), bp=0, bc=0;
+      while(bc<nb){
+        wc=(bc-(bc%4))/4; mlbw=(bc%4)*8;
+        wa[wc]=(wa[wc]|(str.charCodeAt(bc)<<mlbw)); bc++;
+      }
+      wc=(bc-(bc%4))/4; mlbw=(bc%4)*8;
+      wa[wc]=wa[wc]|(0x80<<mlbw);
+      wa[nwp*16-2]=nb<<3; wa[nwp*16-1]=nb>>>29;
+      return wa;
+    }
+    var x=toWords(utf8(str));
+    var a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+    var S11=7,S12=12,S13=17,S14=22,S21=5,S22=9,S23=14,S24=20,S31=4,S32=11,S33=16,S34=23,S41=6,S42=10,S43=15,S44=21;
+    for(var k=0;k<x.length;k+=16){
+      var AA=a,BB=b,CC=c,DD=d;
+      a=FF(a,b,c,d,x[k+0],S11,-680876936); d=FF(d,a,b,c,x[k+1],S12,-389564586);
+      c=FF(c,d,a,b,x[k+2],S13,606105819); b=FF(b,c,d,a,x[k+3],S14,-1044525330);
+      a=FF(a,b,c,d,x[k+4],S11,-176418897); d=FF(d,a,b,c,x[k+5],S12,1200080426);
+      c=FF(c,d,a,b,x[k+6],S13,-1473231341); b=FF(b,c,d,a,x[k+7],S14,-45705983);
+      a=FF(a,b,c,d,x[k+8],S11,1770035416); d=FF(d,a,b,c,x[k+9],S12,-1958414417);
+      c=FF(c,d,a,b,x[k+10],S13,-42063); b=FF(b,c,d,a,x[k+11],S14,-1990404162);
+      a=FF(a,b,c,d,x[k+12],S11,1804603682); d=FF(d,a,b,c,x[k+13],S12,-40341101);
+      c=FF(c,d,a,b,x[k+14],S13,-1502002290); b=FF(b,c,d,a,x[k+15],S14,1236535329);
+      a=GG(a,b,c,d,x[k+1],S21,-165796510); d=GG(d,a,b,c,x[k+6],S22,-1069501632);
+      c=GG(c,d,a,b,x[k+11],S23,643717713); b=GG(b,c,d,a,x[k+0],S24,-373897302);
+      a=GG(a,b,c,d,x[k+5],S21,-701558691); d=GG(d,a,b,c,x[k+10],S22,38016083);
+      c=GG(c,d,a,b,x[k+15],S23,-660478335); b=GG(b,c,d,a,x[k+4],S24,-405537848);
+      a=GG(a,b,c,d,x[k+9],S21,568446438); d=GG(d,a,b,c,x[k+14],S22,-1019803690);
+      c=GG(c,d,a,b,x[k+3],S23,-187363961); b=GG(b,c,d,a,x[k+8],S24,1163531501);
+      a=GG(a,b,c,d,x[k+13],S21,-1444681467); d=GG(d,a,b,c,x[k+2],S22,-51403784);
+      c=GG(c,d,a,b,x[k+7],S23,1735328473); b=GG(b,c,d,a,x[k+12],S24,-1926607734);
+      a=HH(a,b,c,d,x[k+5],S31,-378558); d=HH(d,a,b,c,x[k+8],S32,-2022574463);
+      c=HH(c,d,a,b,x[k+11],S33,1839030562); b=HH(b,c,d,a,x[k+14],S34,-35309556);
+      a=HH(a,b,c,d,x[k+1],S31,-1530992060); d=HH(d,a,b,c,x[k+4],S32,1272893353);
+      c=HH(c,d,a,b,x[k+7],S33,-155497632); b=HH(b,c,d,a,x[k+10],S34,-1094730640);
+      a=HH(a,b,c,d,x[k+13],S31,681279174); d=HH(d,a,b,c,x[k+0],S32,-358537222);
+      c=HH(c,d,a,b,x[k+3],S33,-722521979); b=HH(b,c,d,a,x[k+6],S34,76029189);
+      a=HH(a,b,c,d,x[k+9],S31,-640364487); d=HH(d,a,b,c,x[k+12],S32,-421815835);
+      c=HH(c,d,a,b,x[k+15],S33,530742520); b=HH(b,c,d,a,x[k+2],S34,-995338651);
+      a=II(a,b,c,d,x[k+0],S41,-198630844); d=II(d,a,b,c,x[k+7],S42,1126891415);
+      c=II(c,d,a,b,x[k+14],S43,-1416354905); b=II(b,c,d,a,x[k+5],S44,-57434055);
+      a=II(a,b,c,d,x[k+12],S41,1700485571); d=II(d,a,b,c,x[k+3],S42,-1894986606);
+      c=II(c,d,a,b,x[k+10],S43,-1051523); b=II(b,c,d,a,x[k+1],S44,-2054922799);
+      a=II(a,b,c,d,x[k+8],S41,1873313359); d=II(d,a,b,c,x[k+15],S42,-30611744);
+      c=II(c,d,a,b,x[k+6],S43,-1560198380); b=II(b,c,d,a,x[k+13],S44,1309151649);
+      a=II(a,b,c,d,x[k+4],S41,-145523070); d=II(d,a,b,c,x[k+11],S42,-1120210379);
+      c=II(c,d,a,b,x[k+2],S43,718787259); b=II(b,c,d,a,x[k+9],S44,-343485551);
+      a=addU(a,AA); b=addU(b,BB); c=addU(c,CC); d=addU(d,DD);
+    }
+    return (toHex(a)+toHex(b)+toHex(c)+toHex(d)).toLowerCase();
+  }
+
+  function doLogin(){
+    var form = document.forms['sendin'];
+    var chapId = form['chap-id'] ? form['chap-id'].value : '';
+    var chapChallenge = form['chap-challenge'] ? form['chap-challenge'].value : '';
+    if(chapId && chapChallenge){
+      form.password.value = md5(chapId + form.password.value + chapChallenge);
+    }
+    return true;
+  }
 </script>
 
 </body>
