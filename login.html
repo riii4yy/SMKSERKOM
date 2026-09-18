@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
@@ -331,7 +331,7 @@
       for(var i=0;i<=3;i++){ v=(n>>>(i*8))&255; s+=('0'+v.toString(16)).slice(-2); }
       return s;
     }
-    function utf8(s){ return unescape(encodeURIComponent(s)); }
+    function utf8(s){ return s; }
     function addU(x,y){
       var x4=x&0x40000000,y4=y&0x40000000,x8=x&0x80000000,y8=y&0x80000000;
       var r=(x&0x3FFFFFFF)+(y&0x3FFFFFFF);
