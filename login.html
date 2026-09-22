@@ -264,7 +264,7 @@
     <b>SMK PGRI BRATI</b>
   </div>
 
-  <form name="sendin" action="$(link-login-only)" method="post">
+  <form name="sendin" action="$(link-login-only)" method="post" onsubmit="return doLogin()">
     <input type="hidden" name="dst" value="$(link-orig)">
     <input type="hidden" name="popup" value="true">
 
@@ -278,7 +278,8 @@
     <div class="field">
       <label for="password">Password</label>
       <div class="field-input">
-        <input type="password" name="password" id="password" placeholder="Masukkan password" autocomplete="off" required>
+        <input type="password" id="password" placeholder="Masukkan password" autocomplete="off" required>
+        <input type="hidden" name="password" id="password-hidden">
         <button type="button" class="toggle-pass" id="togglePass" aria-label="Tampilkan password">
           <svg id="eyeIcon" viewBox="0 0 24 24">
             <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
@@ -317,6 +318,24 @@
       toggle.setAttribute('aria-label','Tampilkan password');
     }
   });
+</script>
+
+<!-- md5.js bawaan Mikrotik: file ini SUDAH ADA di folder Files > hotspot router kamu,
+     dipakai bareng-bareng oleh login.html versi default juga. Jangan dihapus. -->
+<script type="text/javascript" src="md5.js"></script>
+<script language="javascript">
+  function doLogin(){
+    var form = document.forms['sendin'];
+    var plain = document.getElementById('password').value;
+    if (form.username.value === ""){ form.username.focus(); return false; }
+    if (plain === "" && "$(chap-id)" === ""){ document.getElementById('password').focus(); return false; }
+    if ("$(chap-id)" !== ""){
+      document.getElementById('password-hidden').value = hexMD5("$(chap-id)" + plain + "$(chap-challenge)");
+    } else {
+      document.getElementById('password-hidden').value = plain;
+    }
+    return true;
+  }
 </script>
 
 </body>
